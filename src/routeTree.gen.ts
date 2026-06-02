@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PlatformPlatformRouteImport } from './routes/platform.$platform'
+import { Route as PlayPlatformSlugRouteImport } from './routes/play.$platform.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlatformPlatformRoute = PlatformPlatformRouteImport.update({
+  id: '/platform/$platform',
+  path: '/platform/$platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayPlatformSlugRoute = PlayPlatformSlugRouteImport.update({
+  id: '/play/$platform/$slug',
+  path: '/play/$platform/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/platform/$platform': typeof PlatformPlatformRoute
+  '/play/$platform/$slug': typeof PlayPlatformSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/platform/$platform': typeof PlatformPlatformRoute
+  '/play/$platform/$slug': typeof PlayPlatformSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/platform/$platform': typeof PlatformPlatformRoute
+  '/play/$platform/$slug': typeof PlayPlatformSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/platform/$platform' | '/play/$platform/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/platform/$platform' | '/play/$platform/$slug'
+  id: '__root__' | '/' | '/platform/$platform' | '/play/$platform/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PlatformPlatformRoute: typeof PlatformPlatformRoute
+  PlayPlatformSlugRoute: typeof PlayPlatformSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +68,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/platform/$platform': {
+      id: '/platform/$platform'
+      path: '/platform/$platform'
+      fullPath: '/platform/$platform'
+      preLoaderRoute: typeof PlatformPlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/$platform/$slug': {
+      id: '/play/$platform/$slug'
+      path: '/play/$platform/$slug'
+      fullPath: '/play/$platform/$slug'
+      preLoaderRoute: typeof PlayPlatformSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PlatformPlatformRoute: PlatformPlatformRoute,
+  PlayPlatformSlugRoute: PlayPlatformSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
