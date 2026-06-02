@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { X, Cpu, Gamepad2 } from "lucide-react";
 import type { Game } from "@/lib/games";
 import { emulatorJsCore } from "@/lib/games";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   game: Game | null;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function PlayModal({ game, onClose }: Props) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (!game) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -29,7 +32,6 @@ export function PlayModal({ game, onClose }: Props) {
   };
 
   const launchRomM = () => {
-    // Open RomM web library with the ROM URL as a query hint.
     const url = `https://romm.app/?rom=${encodeURIComponent(romUrl)}`;
     window.open(url, "_blank", "noopener");
     onClose();
@@ -37,11 +39,11 @@ export function PlayModal({ game, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md overflow-hidden rounded-lg border-2 border-border bg-card p-6 glow-pink scanlines"
+        className="relative w-full max-w-md overflow-hidden rounded-xl border border-border bg-card p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -52,35 +54,29 @@ export function PlayModal({ game, onClose }: Props) {
           <X size={18} />
         </button>
 
-        <h2 className="text-neon-pink mb-1 text-sm">SELECT EMULATOR</h2>
-        <p className="mb-6 truncate text-base text-muted-foreground" style={{ fontFamily: "VT323, monospace", fontSize: "1.1rem" }}>
-          {game.name}
-        </p>
+        <h2 className="mb-1 text-base font-semibold">{t("selectEmulator")}</h2>
+        <p className="mb-6 truncate text-sm text-muted-foreground">{game.name}</p>
 
         <div className="space-y-3">
           <button
             onClick={launchEmulatorJs}
-            className="group flex w-full items-center gap-4 rounded border-2 border-border bg-background/60 p-4 text-left transition hover:border-[var(--neon-cyan)] hover:glow-cyan"
+            className="group flex w-full items-center gap-4 rounded-lg border border-border bg-background p-4 text-left transition hover:border-primary hover:bg-accent"
           >
-            <Gamepad2 className="text-neon-cyan" size={32} />
+            <Gamepad2 className="text-primary" size={28} />
             <div>
-              <div className="text-sm text-neon-cyan" style={{ fontFamily: "Press Start 2P, monospace" }}>EmulatorJS</div>
-              <div className="text-sm text-muted-foreground" style={{ fontFamily: "VT323, monospace", fontSize: "1rem" }}>
-                Play instantly in the browser
-              </div>
+              <div className="text-sm font-medium">EmulatorJS</div>
+              <div className="text-xs text-muted-foreground">{t("playInBrowser")}</div>
             </div>
           </button>
 
           <button
             onClick={launchRomM}
-            className="group flex w-full items-center gap-4 rounded border-2 border-border bg-background/60 p-4 text-left transition hover:border-[var(--neon-pink)] hover:glow-pink"
+            className="group flex w-full items-center gap-4 rounded-lg border border-border bg-background p-4 text-left transition hover:border-primary hover:bg-accent"
           >
-            <Cpu className="text-neon-pink" size={32} />
+            <Cpu className="text-primary" size={28} />
             <div>
-              <div className="text-sm text-neon-pink" style={{ fontFamily: "Press Start 2P, monospace" }}>RomM</div>
-              <div className="text-sm text-muted-foreground" style={{ fontFamily: "VT323, monospace", fontSize: "1rem" }}>
-                Open in your RomM library
-              </div>
+              <div className="text-sm font-medium">RomM</div>
+              <div className="text-xs text-muted-foreground">{t("openInRomM")}</div>
             </div>
           </button>
         </div>

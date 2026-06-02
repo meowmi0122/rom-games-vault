@@ -6,6 +6,7 @@ import { useFavorites, useRecent } from "@/lib/storage";
 import { GameCard } from "@/components/GameCard";
 import { PlayModal } from "@/components/PlayModal";
 import { SiteHeader } from "@/components/SiteHeader";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/platform/$platform")({
   loader: ({ params }) => {
@@ -16,34 +17,40 @@ export const Route = createFileRoute("/platform/$platform")({
     const meta = getPlatformMeta(params.platform);
     return {
       meta: [
-        { title: `${meta.full} ROMs — Arcade Vault` },
+        { title: `${meta.full} — Game Vault` },
         { name: "description", content: `Play and download ${meta.full} ROMs in your browser.` },
-        { property: "og:title", content: `${meta.full} ROMs` },
-        { property: "og:description", content: `${meta.full} ROM library.` },
       ],
     };
   },
-  notFoundComponent: () => (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <div className="mx-auto max-w-xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-xl text-neon-pink">PLATFORM NOT FOUND</h1>
-        <Link to="/" className="arcade-btn arcade-btn-download">Back to home</Link>
-      </div>
-    </div>
-  ),
-  errorComponent: ({ error, reset }) => (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <div className="mx-auto max-w-xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-xl text-neon-pink">SYSTEM ERROR</h1>
-        <p className="mb-4 text-muted-foreground">{error.message}</p>
-        <button onClick={reset} className="arcade-btn arcade-btn-play">Retry</button>
-      </div>
-    </div>
-  ),
+  notFoundComponent: NotFoundView,
+  errorComponent: ErrorView,
   component: PlatformPage,
 });
+
+function NotFoundView() {
+  return (
+    <div className="min-h-screen">
+      <SiteHeader />
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <h1 className="mb-4 text-xl font-semibold">Platform not found</h1>
+        <Link to="/" className="inline-flex rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90">Home</Link>
+      </div>
+    </div>
+  );
+}
+
+function ErrorView({ error, reset }: { error: Error; reset: () => void }) {
+  return (
+    <div className="min-h-screen">
+      <SiteHeader />
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <h1 className="mb-4 text-xl font-semibold">Error</h1>
+        <p className="mb-4 text-muted-foreground">{error.message}</p>
+        <button onClick={reset} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90">Retry</button>
+      </div>
+    </div>
+  );
+}
 
 function PlatformPage() {
   const { platform } = Route.useLoaderData();
@@ -53,6 +60,7 @@ function PlatformPage() {
   const { push } = useRecent();
   const [query, setQuery] = useState("");
   const [playing, setPlaying] = useState<Game | null>(null);
+  const { t } = useI18n();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -68,36 +76,33 @@ function PlatformPage() {
     <div className="min-h-screen">
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-8">
-        <Link to="/" className="mb-6 inline-flex items-center gap-2 text-xs text-neon-cyan hover:text-neon-pink" style={{ fontFamily: "Press Start 2P, monospace" }}>
-          <ArrowLeft size={14} /> BACK
+        <Link to="/" className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft size={14} /> {t("back")}
         </Link>
 
-        <header className="mb-8 flex items-end justify-between gap-4 flex-wrap">
+        <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="text-3xl">{meta.icon}</div>
-            <h1 className="mt-2 text-xl md:text-2xl" style={{ color: meta.color }}>
-              {meta.full}
-            </h1>
-            <p className="text-muted-foreground" style={{ fontFamily: "VT323, monospace", fontSize: "1.1rem" }}>
-              {all.length} game{all.length === 1 ? "" : "s"} in library
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight">{meta.full}</h1>
+            <p className="text-sm text-muted-foreground">
+              {all.length} {t("games")} · {t("library")}
             </p>
           </div>
 
-          <div className="flex w-full items-center gap-2 rounded border-2 border-border bg-card px-3 py-2 sm:w-72 focus-within:border-[var(--neon-cyan)]">
-            <Search size={14} className="text-neon-cyan" />
+          <div className="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 sm:w-72 focus-within:ring-2 focus-within:ring-ring">
+            <Search size={14} className="text-muted-foreground" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="FILTER..."
+              placeholder={t("filter")}
               className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-              style={{ fontFamily: "VT323, monospace", fontSize: "1.05rem" }}
             />
           </div>
         </header>
 
         {filtered.length === 0 ? (
-          <p className="rounded border-2 border-dashed border-border p-10 text-center text-muted-foreground" style={{ fontFamily: "VT323, monospace", fontSize: "1.1rem" }}>
-            No games. Drop ROMs into <code>/public/games/{platform}/</code>.
+          <p className="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+            {t("noGames")}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
