@@ -11,6 +11,9 @@ import path from "node:path";
 function gamesManifestPlugin() {
   const virtualId = "virtual:games-manifest";
   const resolvedId = "\0" + virtualId;
+  const GH_RAW_BASE =
+    "https://raw.githubusercontent.com/meowmi0122/rom-games-vault/refs/heads/main/public";
+  const SIZE_LIMIT = 100 * 1024 * 1024; // 100MB
 
   function scan() {
     const root = path.resolve(process.cwd(), "public/games");
@@ -33,6 +36,11 @@ function gamesManifestPlugin() {
         const rom = files.find((f) => /^rom\./i.test(f));
         const cover = files.find((f) => /^cover\.(png|jpg|jpeg|webp|gif)$/i.test(f));
         if (!rom) continue;
+        const romPath = path.join(gameDir, rom);
+        const romSize = fs.statSync(romPath).size;
+        const romRelative = `/games/${platform}/${slug}/${rom}`;
+        const romUrl =
+          romSize > SIZE_LIMIT ? `${GH_RAW_BASE}${romRelative}` : romRelative;
         const name = slug
           .split("-")
           .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
@@ -42,7 +50,7 @@ function gamesManifestPlugin() {
           slug,
           name,
           cover: cover ? `/games/${platform}/${slug}/${cover}` : "",
-          rom: `/games/${platform}/${slug}/${rom}`,
+          rom: romUrl,
           romFile: rom,
         });
       }
