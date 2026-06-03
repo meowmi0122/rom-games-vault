@@ -1,31 +1,20 @@
 import { games as rawGames } from "virtual:games-manifest";
+import { platformLabels, gameNames } from "@/config/labels";
 
 export type Game = (typeof rawGames)[number];
 
-export const PLATFORM_META: Record<
-  string,
-  { label: string; full: string; color: string; icon: string }
-> = {
-  nds: { label: "NDS", full: "Nintendo DS", color: "var(--neon-pink)", icon: "🎮" },
-  gba: { label: "GBA", full: "Game Boy Advance", color: "var(--neon-cyan)", icon: "👾" },
-  snes: { label: "SNES", full: "Super Nintendo", color: "var(--neon-purple)", icon: "🕹️" },
-  nes: { label: "NES", full: "Nintendo", color: "var(--neon-yellow)", icon: "🎲" },
-  gb: { label: "GB", full: "Game Boy", color: "var(--neon-green)", icon: "📟" },
-  n64: { label: "N64", full: "Nintendo 64", color: "var(--neon-pink)", icon: "🎯" },
-};
-
 export function getPlatformMeta(p: string) {
-  return (
-    PLATFORM_META[p] ?? {
-      label: p.toUpperCase(),
-      full: p.toUpperCase(),
-      color: "var(--neon-cyan)",
-      icon: "💿",
-    }
-  );
+  const override = platformLabels[p];
+  return {
+    label: override?.label ?? p.toUpperCase(),
+    full: override?.full ?? p.toUpperCase(),
+  };
 }
 
-export const allGames = rawGames;
+export const allGames: Game[] = rawGames.map((g) => {
+  const key = `${g.platform}/${g.slug}`;
+  return gameNames[key] ? { ...g, name: gameNames[key] } : g;
+});
 
 export function gamesByPlatform(platform: string) {
   return allGames.filter((g) => g.platform === platform);
