@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Gamepad2 } from "lucide-react";
 import { allGames, gamesByPlatform, getPlatformMeta, platforms, type Game } from "@/lib/games";
 import { useFavorites, useRecent } from "@/lib/storage";
 import { GameCard } from "@/components/GameCard";
-import { PlayModal } from "@/components/PlayModal";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 
@@ -24,7 +23,6 @@ function Index() {
   const { favs, toggle, isFav } = useFavorites();
   const { recent, push } = useRecent();
   const [query, setQuery] = useState("");
-  const [playing, setPlaying] = useState<Game | null>(null);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -41,7 +39,7 @@ function Index() {
 
   const handlePlay = (g: Game) => {
     push(`${g.platform}/${g.slug}`);
-    setPlaying(g);
+    window.open(`/play/${g.platform}/${g.slug}`, "_blank", "noopener");
   };
 
   return (
@@ -83,7 +81,7 @@ function Index() {
                       params={{ platform: p }}
                       className="group flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
                     >
-                      <div className="text-3xl">{meta.icon}</div>
+                        <Gamepad2 size={28} className="text-primary" />
                       <div className="flex-1">
                         <div className="text-base font-semibold">{meta.label}</div>
                         <div className="text-sm text-muted-foreground">
@@ -116,8 +114,6 @@ function Index() {
           {t("dropHint")}
         </footer>
       </main>
-
-      <PlayModal game={playing} onClose={() => setPlaying(null)} />
     </div>
   );
 }

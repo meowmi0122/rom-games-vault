@@ -1,10 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, Gamepad2 } from "lucide-react";
 import { gamesByPlatform, getPlatformMeta, platforms, type Game } from "@/lib/games";
 import { useFavorites, useRecent } from "@/lib/storage";
 import { GameCard } from "@/components/GameCard";
-import { PlayModal } from "@/components/PlayModal";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 
@@ -59,7 +58,6 @@ function PlatformPage() {
   const { toggle, isFav } = useFavorites();
   const { push } = useRecent();
   const [query, setQuery] = useState("");
-  const [playing, setPlaying] = useState<Game | null>(null);
   const { t } = useI18n();
 
   const filtered = useMemo(() => {
@@ -69,7 +67,7 @@ function PlatformPage() {
 
   const handlePlay = (g: Game) => {
     push(`${g.platform}/${g.slug}`);
-    setPlaying(g);
+    window.open(`/play/${g.platform}/${g.slug}`, "_blank", "noopener");
   };
 
   return (
@@ -82,10 +80,10 @@ function PlatformPage() {
 
         <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="text-3xl">{meta.icon}</div>
+            <Gamepad2 size={28} className="text-primary" />
             <h1 className="mt-2 text-2xl font-semibold tracking-tight">{meta.full}</h1>
             <p className="text-sm text-muted-foreground">
-              {all.length} {t("games")} · {t("library")}
+              {all.length} {t("games")}
             </p>
           </div>
 
@@ -118,8 +116,6 @@ function PlatformPage() {
           </div>
         )}
       </main>
-
-      <PlayModal game={playing} onClose={() => setPlaying(null)} />
     </div>
   );
 }
