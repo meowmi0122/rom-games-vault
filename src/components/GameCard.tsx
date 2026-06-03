@@ -1,4 +1,4 @@
-import { Play, Download, Heart } from "lucide-react";
+import { Play, Download, Heart, Gamepad2 } from "lucide-react";
 import type { Game } from "@/lib/games";
 import { useI18n } from "@/lib/i18n";
 
@@ -25,7 +25,9 @@ export function GameCard({ game, isFav, onPlay, onToggleFav }: Props) {
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-4xl text-muted-foreground">🎮</div>
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+            <Gamepad2 size={48} />
+          </div>
         )}
         <button
           onClick={() => onToggleFav(id)}
