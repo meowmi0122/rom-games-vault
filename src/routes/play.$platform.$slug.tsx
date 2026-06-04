@@ -10,6 +10,15 @@ export const Route = createFileRoute("/play/$platform/$slug")({
   },
   head: ({ params }) => ({
     meta: [{ title: `Play ${params.slug}` }],
+    links: [
+      { rel: "preconnect", href: "https://cdn.emulatorjs.org", crossOrigin: "" },
+      { rel: "preconnect", href: "https://raw.githubusercontent.com", crossOrigin: "" },
+      {
+        rel: "preload",
+        as: "script",
+        href: "https://cdn.emulatorjs.org/stable/data/loader.js",
+      },
+    ],
   }),
   notFoundComponent: () => (
     <div className="flex h-screen items-center justify-center bg-black text-white">
@@ -32,6 +41,12 @@ function PlayPage() {
     if (loadedRef.current) return;
     loadedRef.current = true;
 
+    // Make the whole page the game — kill any margins/scroll from the doc.
+    const prevHtml = document.documentElement.style.cssText;
+    const prevBody = document.body.style.cssText;
+    document.documentElement.style.cssText = "margin:0;padding:0;height:100%;overflow:hidden;background:#000";
+    document.body.style.cssText = "margin:0;padding:0;height:100%;overflow:hidden;background:#000";
+
     const core = emulatorJsCore(game.platform);
     const w = window as any;
     w.EJS_player = "#game";
@@ -39,6 +54,7 @@ function PlayPage() {
     w.EJS_gameUrl = game.rom;
     w.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
     w.EJS_startOnLoaded = true;
+    w.EJS_threads = true;
     w.EJS_gameName = game.name;
 
     document.title = game.name;
@@ -50,8 +66,14 @@ function PlayPage() {
 
     return () => {
       s.remove();
+      document.documentElement.style.cssText = prevHtml;
+      document.body.style.cssText = prevBody;
     };
   }, [game]);
 
-  return <div id="game" className="fixed inset-0 h-screen w-screen bg-black" />;
+  return (
+    <div style={{ width: "100%", height: "100vh", maxWidth: "100%" }}>
+      <div id="game" style={{ width: "100%", height: "100%" }} />
+    </div>
+  );
 }
