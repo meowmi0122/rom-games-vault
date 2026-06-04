@@ -33,8 +33,10 @@ function gamesManifestPlugin() {
         const gameDir = path.join(platDir, slug);
         if (!fs.statSync(gameDir).isDirectory()) continue;
         const files = fs.readdirSync(gameDir);
-        const rom = files.find((f) => /^rom\./i.test(f));
-        const cover = files.find((f) => /^cover\.(png|jpg|jpeg|webp|gif)$/i.test(f));
+        const rom = files.find((f) => /\.zip$/i.test(f));
+        const cover = files.find((f) =>
+          /\.(png|jpg|jpeg|webp|gif|avif)$/i.test(f),
+        );
         if (!rom) continue;
         const romPath = path.join(gameDir, rom);
         const romSize = fs.statSync(romPath).size;
