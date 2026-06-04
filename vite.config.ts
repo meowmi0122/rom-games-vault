@@ -33,10 +33,13 @@ function gamesManifestPlugin() {
         const gameDir = path.join(platDir, slug);
         if (!fs.statSync(gameDir).isDirectory()) continue;
         const files = fs.readdirSync(gameDir);
-        const rom = files.find((f) => /\.zip$/i.test(f));
-        const cover = files.find((f) =>
-          /\.(png|jpg|jpeg|webp|gif|avif)$/i.test(f),
-        );
+        const IMG = /\.(png|jpg|jpeg|webp|gif|avif|svg)$/i;
+        const SKIP = /^(readme|notes?)\b|\.(md|txt)$/i;
+        const cover = files.find((f) => IMG.test(f));
+        // Prefer .zip, otherwise first non-image, non-readme file
+        const rom =
+          files.find((f) => /\.zip$/i.test(f)) ??
+          files.find((f) => !IMG.test(f) && !SKIP.test(f) && !f.startsWith("."));
         if (!rom) continue;
         const romPath = path.join(gameDir, rom);
         const romSize = fs.statSync(romPath).size;
