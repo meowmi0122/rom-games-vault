@@ -88,8 +88,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Arcade Vault — Retro ROM Library" },
       { name: "twitter:description", content: "Browse, download and play your retro ROM collection in the browser." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fc147091-02a2-4891-81be-298b72a4674c/id-preview-6c556a87--a18590c6-c44a-4efd-99c4-f82b0cc1bfe1.lovable.app-1780564317361.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fc147091-02a2-4891-81be-298b72a4674c/id-preview-6c556a87--a18590c6-c44a-4efd-99c4-f82b0cc1bfe1.lovable.app-1780564317361.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/58d3c7ec-1c25-45c3-8b17-b961395b2063" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/58d3c7ec-1c25-45c3-8b17-b961395b2063" },
     ],
     links: [
       {
