@@ -24,14 +24,20 @@ function gamesManifestPlugin() {
       cover: string;
       rom: string;
       romFile: string;
+      mtime: number;
     }> = [];
     if (!fs.existsSync(root)) return games;
     for (const platform of fs.readdirSync(root)) {
       const platDir = path.join(root, platform);
       if (!fs.statSync(platDir).isDirectory()) continue;
-      for (const slug of fs.readdirSync(platDir)) {
-        const gameDir = path.join(platDir, slug);
+      for (const folder of fs.readdirSync(platDir)) {
+        const gameDir = path.join(platDir, folder);
         if (!fs.statSync(gameDir).isDirectory()) continue;
+        // slugify folder name: lowercase, replace non-[a-z0-9] with `-`
+        const slug = folder
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "game";
         const files = fs.readdirSync(gameDir);
         const IMG = /\.(png|jpg|jpeg|webp|gif|avif|svg)$/i;
         const SKIP = /^(readme|notes?)\b|\.(md|txt)$/i;
@@ -42,11 +48,13 @@ function gamesManifestPlugin() {
           files.find((f) => !IMG.test(f) && !SKIP.test(f) && !f.startsWith("."));
         if (!rom) continue;
         const romPath = path.join(gameDir, rom);
-        const romSize = fs.statSync(romPath).size;
-        const romRelative = `/games/${platform}/${slug}/${rom}`;
+        const romStat = fs.statSync(romPath);
+        const romSize = romStat.size;
+        const enc = (s: string) => encodeURIComponent(s);
+        const romRelative = `/games/${enc(platform)}/${enc(folder)}/${enc(rom)}`;
         const romUrl =
           romSize > SIZE_LIMIT ? `${GH_RAW_BASE}${romRelative}` : romRelative;
-        const name = slug
+        const name = folder
           .split("-")
           .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
           .join(" ");
@@ -54,9 +62,10 @@ function gamesManifestPlugin() {
           platform,
           slug,
           name,
-          cover: cover ? `/games/${platform}/${slug}/${cover}` : "",
+          cover: cover ? `/games/${enc(platform)}/${enc(folder)}/${enc(cover)}` : "",
           rom: romUrl,
           romFile: rom,
+          mtime: romStat.mtimeMs,
         });
       }
     }
