@@ -31,19 +31,7 @@ export function findGame(platform: string, slug: string) {
   return allGames.find((g) => g.platform === platform && g.slug === slug);
 }
 
-/* EmulatorJS core mapping (cdn.emulatorjs.org) */
-const EJS_CORES: Record<string, string> = {
-  nds: "melonds",
-  gba: "gba",
-  gb: "gb",
-  gbc: "gb",
-  nes: "nes",
-  snes: "snes",
-  n64: "n64",
-  segaMS: "segaMS",
-  segaMD: "segaMD",
-};
-
+/* Platform folder name IS the EmulatorJS core (lowercase short name). */
 export function emulatorJsCore(platform: string) {
-  return EJS_CORES[platform] ?? platform;
+  return platform.toLowerCase();
 }
