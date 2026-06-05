@@ -6,5 +6,6 @@ declare module "virtual:games-manifest" {
     cover: string;
     rom: string;
     romFile: string;
+    mtime: number;
   }>;
 }
