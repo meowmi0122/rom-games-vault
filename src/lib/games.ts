@@ -17,7 +17,9 @@ export const allGames: Game[] = rawGames.map((g) => {
 });
 
 export function gamesByPlatform(platform: string) {
-  return allGames.filter((g) => g.platform === platform);
+  return allGames
+    .filter((g) => g.platform === platform)
+    .sort((a, b) => a.mtime - b.mtime);
 }
 
 export function platforms() {
