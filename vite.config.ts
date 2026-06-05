@@ -40,12 +40,9 @@ function gamesManifestPlugin() {
           .replace(/^-+|-+$/g, "") || "game";
         const files = fs.readdirSync(gameDir);
         const IMG = /\.(png|jpg|jpeg|webp|gif|avif|svg)$/i;
-        const SKIP = /^(readme|notes?)\b|\.(md|txt)$/i;
         const cover = files.find((f) => IMG.test(f));
-        // Prefer .zip, otherwise first non-image, non-readme file
-        const rom =
-          files.find((f) => /\.zip$/i.test(f)) ??
-          files.find((f) => !IMG.test(f) && !SKIP.test(f) && !f.startsWith("."));
+        // Only load rom.zip (ignore .nds/.gba/etc — EmuJS will load the zip).
+        const rom = files.find((f) => f.toLowerCase() === "rom.zip");
         if (!rom) continue;
         const romPath = path.join(gameDir, rom);
         const romStat = fs.statSync(romPath);
