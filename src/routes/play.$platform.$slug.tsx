@@ -56,6 +56,9 @@ function PlayPage() {
     w.EJS_startOnLoaded = true;
     w.EJS_threads = true;
     w.EJS_gameName = game.name;
+    // EmulatorJS CDN has zh-CN but not zh-TW; default to en-US otherwise.
+    const nav = typeof navigator !== "undefined" ? navigator.language : "en";
+    w.EJS_language = nav.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
 
     document.title = game.name;
 
