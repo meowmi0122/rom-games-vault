@@ -54,7 +54,8 @@ function PlayPage() {
     w.EJS_gameUrl = game.rom;
     w.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
     w.EJS_startOnLoaded = true;
-    w.EJS_threads = true;
+    // Threads need SharedArrayBuffer → requires COOP/COEP headers we don't ship. Leave off.
+    w.EJS_threads = false;
     w.EJS_gameName = game.name;
 
     document.title = game.name;
